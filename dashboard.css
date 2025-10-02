@@ -1,0 +1,216 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f1f5f9 100%);
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+
+.dashboard-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.dashboard-subtitle {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.stat-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.stat-icon {
+  font-size: 20px;
+}
+
+.stat-icon-blue { color: #2563eb; }
+.stat-icon-green { color: #059669; }
+.stat-icon-orange { color: #ea580c; }
+
+/* Profile */
+.profile-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #1e293b;
+}
+
+.profile-bio {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 14px;
+}
+
+/* Add Post */
+.add-post-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#add-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#add-post-form input {
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+#add-post-form button {
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#add-post-form button:hover {
+  background: #1e40af;
+}
+
+/* Feed */
+.feed-section {
+  margin-top: 16px;
+}
+
+.feed-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.feed-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.feed-img {
+  width: 100%;
+  display: block;
+}
+
+.feed-caption {
+  padding: 12px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.feed-actions {
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feed-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ef4444;
+}
+
+.feed-actions span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .dashboard-title { font-size: 24px; }
+  .feed-grid { grid-template-columns: 1fr; }
+}
