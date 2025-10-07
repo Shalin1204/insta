@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Instagram Feed — Clone</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+  /* ------------------------------
+     Instagram Feed — Improved Styles
+     Uses your :root tokens and layout system
+     ------------------------------ */
+  :root{
+    --base: #fafafa;
+    --maxWidth: 900px;
+    --links: #00376b;
+    --accent: #0095f6;
+    --text-color: #262626;
+    --border: #dbdbdb;
+    --card-radius: 8px;
+    --story-size: 76px;
+    --story-inner: 64px;
+    --feed-width: 600px;
+    --sidebar-width: 300px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;}
+
+  html,body{height:100%;background:var(--base);color:var(--text-color);}
+
+  /* Header */
+  header{
+    position: sticky; top:0; z-index:50;
+    background:#fff; border-bottom:1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+  }
+  .head-inner {
+    max-width: var(--maxWidth);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 180px 1fr 220px;
+    gap: 12px;
+    align-items:center;
+    padding:10px 16px;
+  }
+  .logo { font-weight:700; font-size:20px; color: #111; display:flex; align-items:center; gap:8px;}
+  .logo i { color: #E1306C; font-size:20px; transform: rotate(-10deg); }
+
+  /* Center search */
+  .search {
+    justify-self:center;
+    position: relative;
+    width: 320px;
+  }
+  .search input{
+    width:100%; padding:8px 14px; border-radius:8px; border:1px solid var(--border);
+    background: #fff; text-align:center; color:var(--text-color);
+  }
+  .search .fa-magnifying-glass{position:absolute; left:12px; top:10px; color:#bdbdbd; display:none;} /* hidden because centered */
+  @media (max-width: 680px){ .head-inner{grid-template-columns: 1fr 1fr; } .search{display:none;} }
+
+  /* header right icons */
+  .nav-actions { justify-self:end; display:flex; gap:12px; align-items:center; }
+  .nav-actions a{ color:var(--text-color); text-decoration:none; font-size:18px; padding:6px; border-radius:8px;}
+  .nav-actions a:hover{ background: rgba(0,0,0,0.03); }
+
+  /* Page layout: center feed + sidebar */
+  .page-wrap {
+    max-width: var(--maxWidth);
+    margin: 22px auto;
+    display: grid;
+    grid-template-columns: minmax(0, var(--feed-width)) 1fr;
+    gap: 28px;
+    padding: 0 16px;
+  }
+
+  /* MAIN FEED */
+  .feed {
+    width: 100%;
+  }
+
+  /* Stories bar */
+  .stories {
+    display:flex; gap:12px; padding:14px; background:#fff; border:1px solid var(--border); border-radius:var(--card-radius);
+    overflow-x:auto; margin-bottom:18px;
+  }
+  .story { flex:0 0 auto; width:var(--story-size); text-align:center; font-size:12px; color:#444; }
+  .story-ring {
+    width:var(--story-size); height:var(--story-size); display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    border-radius:50%;
+    padding:6px;
+  }
+  .story-inner {
+    width:var(--story-inner); height:var(--story-inner); border-radius:50%;
+    background: #fff; padding:3px; overflow:hidden; display:block;
+  }
+  .story-inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+  .story span { display:block; margin-top:6px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:100%; }
+
+  /* Post card */
+  .post {
+    background:#fff; border:1px solid var(--border); border-radius:var(--card-radius); overflow:hidden; margin-bottom:18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .post-header {
+    display:flex; align-items:center; gap:12px; padding:12px 14px;
+  }
+  .post-header .avatar { width:42px; height:42px; border-radius:50%; overflow:hidden; border:1px solid #f0f0f0; }
+  .post-header .avatar img{ width:100%; height:100%; object-fit:cover; display:block;}
+  .post-header .user { font-weight:600; color:var(--text-color); font-size:14px; }
+  .post-header .menu { margin-left:auto; color:#777; font-size:18px; }
+
+  /* Post media */
+  .post-media { position:relative; background:#fafafa; }
+  .post-media img { width:100%; display:block; object-fit:cover; max-height: 820px; }
+
+  /* Overlay on hover (desktop) */
+  .post-media .overlay {
+    position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:center; gap:12px;
+    padding:12px; pointer-events:none; opacity:0; transition:opacity .18s ease;
+    background: linear-gradient(transparent, rgba(0,0,0,0.08));
+  }
+  .post:hover .post-media .overlay{ opacity:1; pointer-events:none; }
+
+  .post-actions {
+    display:flex; align-items:center; justify-content:space-between; padding:10px 12px;
+  }
+  .actions-left { display:flex; gap:12px; align-items:center; font-size:22px; }
+  .actions-left button, .actions-right button { background:none; border:none; cursor:pointer; font-size:20px; padding:6px; color:var(--text-color); }
+  .actions-left button.like.active i { color:#e74c3c; transform:scale(1.1); }
+
+  .likes { padding:0 12px 8px; font-weight:600; }
+
+  .caption { padding:0 12px 12px; font-size:14px; color:var(--text-color); line-height:1.35; }
+
+  .meta { padding:0 12px 14px; font-size:12px; color:#8e8e8e; text-transform:uppercase; letter-spacing:.6px; }
+
+  /* Right sidebar */
+  .sidebar { position:relative; top:0; }
+  .who-to-follow { background:#fff; border:1px solid var(--border); border-radius:var(--card-radius); padding:12px; }
+  .who-to-follow h4{ font-size:14px; margin-bottom:10px; color:#444; }
+  .suggestion { display:flex; align-items:center; gap:10px; padding:8px 0; }
+  .suggestion img{ width:42px;height:42px;border-radius:50%; }
+
+  /* Footer (small) */
+  footer{ max-width:var(--maxWidth); margin:28px auto; padding:0 16px; color:#8e8e8e; font-size:12px; text-align:center; }
+
+  /* Responsive behaviors */
+  @media (max-width: 1080px){
+    :root{ --feed-width: 520px; }
+  }
+
+  @media (max-width: 860px){
+    .page-wrap{ grid-template-columns: 1fr; padding: 0 12px; }
+    .sidebar{ display:none; }
+    .head-inner{ grid-template-columns: 1fr 1fr; }
+    .logo{ order:1; }
+    .nav-actions{ justify-self:end; }
+  }
+
+  @media (max-width: 420px){
+    .stories{ padding:10px; gap:8px; }
+    .story { width:64px; }
+    :root{ --story-size:64px; --story-inner:52px; }
+  }
+
+  /* tiny utilities */
+  .hide-mobile { display:inline-block; }
+  @media (max-width:680px){ .hide-mobile{ display:none; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="head-inner">
+      <div class="logo"><i class="fa-brands fa-instagram"></i> Instagram</div>
+
+      <div class="search">
+        <input type="search" placeholder="Search" aria-label="Search">
+      </div>
+
+      <nav class="nav-actions" aria-label="top navigation">
+        <a href="#" title="Home"><i class="fa-solid fa-house"></i></a>
+        <a href="#" title="Messages" class="hide-mobile"><i class="fa-regular fa-paper-plane"></i></a>
+        <a href="#" title="New" class="hide-mobile"><i class="fa-regular fa-square-plus"></i></a>
+        <a href="#" title="Explore"><i class="fa-regular fa-compass"></i></a>
+        <a href="#" title="Notifications"><i class="fa-regular fa-heart"></i></a>
+        <a href="dashboard.html" title="Profile"><img src="https://i.pravatar.cc/34" alt="me" style="width:30px;height:30px;border-radius:50%;"></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+
+    <!-- Feed column -->
+    <section class="feed" aria-label="Feed">
+
+      <!-- STORIES -->
+      <div class="stories" role="list">
+        <!-- multiple story items -->
+        <div class="story" role="listitem">
+          <div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=12" alt="story"></div></div>
+          <span>your story</span>
+        </div>
+
+        <div class="story"><div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=5" alt=""></div></div><span>travel</span></div>
+        <div class="story"><div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=6" alt=""></div></div><span>food</span></div>
+        <div class="story"><div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=8" alt=""></div></div><span>design</span></div>
+        <div class="story"><div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=10" alt=""></div></div><span>friends</span></div>
+        <div class="story"><div class="story-ring"><div class="story-inner"><img src="https://i.pravatar.cc/150?img=11" alt=""></div></div><span>nature</span></div>
+      </div>
+
+      <!-- POST: repeat these blocks for real feed -->
+      <article class="post" aria-label="Post">
+        <div class="post-header">
+          <div class="avatar"><img src="https://i.pravatar.cc/80?img=20" alt="user"></div>
+          <div class="user">shareef._.boi</div>
+          <div class="menu"><i class="fa-solid fa-ellipsis"></i></div>
+        </div>
+
+        <div class="post-media">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop" alt="post image">
+          <div class="overlay">
+            <!-- overlay left counts (decorative) -->
+            <div style="display:flex; gap:10px; align-items:center; pointer-events:none;">
+              <span style="background:rgba(0,0,0,0.35);color:#fff;padding:6px 8px;border-radius:20px;font-size:13px;"> <i class="fa-regular fa-heart"></i> 1.2k</span>
+              <span style="background:rgba(0,0,0,0.35);color:#fff;padding:6px 8px;border-radius:20px;font-size:13px;"> <i class="fa-regular fa-comment"></i> 128</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-actions">
+          <div class="actions-left">
+            <button class="like"><i class="fa-regular fa-heart"></i></button>
+            <button class="comment"><i class="fa-regular fa-comment"></i></button>
+            <button class="send"><i class="fa-regular fa-paper-plane"></i></button>
+          </div>
+          <div class="actions-right">
+            <button class="bookmark"><i class="fa-regular fa-bookmark"></i></button>
+          </div>
+        </div>
+
+        <div class="likes">1,204 likes</div>
+
+        <div class="caption"><strong>shareef._.boi</strong> Beauty of Pakistan — mountains, rivers and colors.</div>
+
+        <div class="meta">2 HOURS AGO</div>
+      </article>
+
+      <!-- another post -->
+      <article class="post">
+        <div class="post-header">
+          <div class="avatar"><img src="https://www.google.com/imgres?q=beach&imgurl=https%3A%2F%2Fdynamic-media-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F15%2F17%2F7f%2Fa5%2Fbig-beach.jpg%3Fw%3D900%26h%3D500%26s%3D1&imgrefurl=https%3A%2F%2Fwww.tripadvisor.in%2FAttraction_Review-g29220-d8335115-Reviews-Big_Beach-Maui_Hawaii.html&docid=u9xlVTLkFcH4rM&tbnid=85Dm1sp_lZ9LpM&vet=12ahUKEwidg_KHrpKQAxX02DgGHYqUKWoQM3oECBgQAA..i&w=900&h=500&hcb=2&ved=2ahUKEwidg_KHrpKQAxX02DgGHYqUKWoQM3oECBgQAA" alt=""></div>
+          <div class="user">_travel.boi</div>
+          <div class="menu"><i class="fa-solid fa-ellipsis"></i></div>
+        </div>
+
+        <div class="post-media">
+          <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1600&q=80&auto=format&fit=crop" alt="post image">
+        </div>
+
+        <div class="post-actions">
+          <div class="actions-left">
+            <button class="like"><i class="fa-regular fa-heart"></i></button>
+            <button class="comment"><i class="fa-regular fa-comment"></i></button>
+            <button class="send"><i class="fa-regular fa-paper-plane"></i></button>
+          </div>
+          <div class="actions-right">
+            <button class="bookmark"><i class="fa-regular fa-bookmark"></i></button>
+          </div>
+        </div>
+
+        <div class="likes">245 likes</div>
+        <div class="caption"><strong>_travel.boi</strong> Sunset at the pier — calm & warm.</div>
+        <div class="meta">8 HOURS AGO</div>
+      </article>
+
+    </section>
+
+    <!-- Sidebar column -->
+    <aside class="sidebar" aria-label="Suggestions">
+      <div class="who-to-follow">
+        <h4>Suggested for you</h4>
+
+        <div class="suggestion"><img src="https://i.pravatar.cc/60?img=21" alt=""><div style="flex:1"><strong>explorer</strong><div style="color:#8e8e8e;font-size:13px">Suggested</div></div><button style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer">Follow</button></div>
+
+        <div class="suggestion"><img src="https://i.pravatar.cc/60?img=22" alt=""><div style="flex:1"><strong>foodie</strong><div style="color:#8e8e8e;font-size:13px">Popular</div></div><button style="background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer">Follow</button></div>
+
+        <div style="height:12px"></div>
+        <div style="font-size:13px;color:#8e8e8e">See all suggestions</div>
+      </div>
+    </aside>
+
+  </main>
+
+  <footer>Instagram Clone • Built for learning — not affiliated with Instagram</footer>
+
+  <script>
+  // small JS to toggle like state and counts
+  document.querySelectorAll('.post').forEach(post => {
+    const likeBtn = post.querySelector('button.like');
+    const likesEl = post.querySelector('.likes');
+    if (!likeBtn || !likesEl) return;
+
+    let liked = false;
+    // parse initial likes
+    let count = (likesEl.textContent || '').match(/[\d,]+/) ? Number((likesEl.textContent.match(/[\d,]+/)[0]||'0').replace(/,/g,'')) : 0;
+
+    likeBtn.addEventListener('click', () => {
+      liked = !liked;
+      likeBtn.classList.toggle('active', liked);
+      likeBtn.innerHTML = liked ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
+      if (liked) { count += 1; } else { count = Math.max(0, count - 1); }
+      likesEl.textContent = count.toLocaleString() + ' likes';
+    });
+  });
+  </script>
+</body>
+</html>
